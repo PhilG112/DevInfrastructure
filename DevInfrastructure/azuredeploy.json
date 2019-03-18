@@ -4,8 +4,46 @@
   "parameters": {
   },
   "variables": {
+    "appServicePlanName": "DevAppServicePlan",
+    "webAppName": "[concat('webapp-', uniquestring(resourcegroup().id))]",
+    "storageAccountName": "[concat('storage', uniquestring(resourcegroup().id))]"
   },
   "resources": [
+    {
+      "apiVersion": "2018-02-01",
+      "name": "[variables('appServicePlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "kind": "app",
+      "location": "[resourcegroup().location]",
+      "sku": {
+        "name": "F1"
+      },
+      "properties": { }
+    },
+    {
+      "apiVersion": "2018-02-01",
+      "name": "[variables('webAppName')]",
+      "type": "Microsoft.Web/sites",
+      "kind": "app",
+      "location": "[resourcegroup().location]",
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageaccounts",
+      "name": "[variables('storageAccountName')]",
+      "apiVersion": "2018-07-01",
+      "location": "[resourcegroup().location]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {}
+    }
   ],
   "outputs": {
   }
